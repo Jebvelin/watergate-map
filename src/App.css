@@ -1,0 +1,34 @@
+select {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: border 0.3s, box-shadow 0.3s;
+  width: 250px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #0c81cf;
+  box-shadow: 0 0 0 2px rgba(0,122,204,0.3);
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+#controls {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+#controls select + br {
+  margin-bottom: 1rem;
+}

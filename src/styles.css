@@ -1,0 +1,33 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+header {
+  background-color: #006699;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+#controls {
+  padding: 0.5rem;
+  background-color: #f4f4f4;
+  text-align: center;
+}
+#map {
+  flex: 1 1 auto;
+  background-color: lightgray;
+}
+select {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+.leaflet-popup-content {
+  font-size: 0.9rem;
+}
