@@ -8,6 +8,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -23,6 +24,8 @@ function App() {
   const [province, setProvince] = useState('all');
   const [office, setOffice] = useState('all');
   const [markers, setMarkers] = useState([]);
+  const [showOfficeModal, setShowOfficeModal] = useState(false);
+  const [showProvinceModal, setShowProvinceModal] = useState(false);
 
   useEffect(() => {
     const map = L.map('map').setView([14.0, 100.6], 6);
@@ -78,44 +81,71 @@ function App() {
       <header>
         <h2>ระบบแสดงตำแหน่งประตูระบายน้ำในประเทศไทย</h2>
       </header>
-      
       <div id="controls">
-  <label htmlFor="officeSelect">เลือกสำนักชลประทาน: </label>
-  <select
-  id="officeSelect"
-  onChange={(e) => {
-    const selected = e.target.value;
-    setOffice(selected);
-    setProvince('all');
-    updateMarkers('all', selected); 
-  }}
-  value={office}
->
-
-    <option value="all">แสดงทั้งหมด</option>
-    {offices.map(o => (
-      <option key={o} value={o}>{o}</option>
-    ))}
-  </select>
-    <br></br>
-
-  <label htmlFor="provinceSelect">เลือกโครงการ: </label>
-  <select
-  id="provinceSelect"
-  onChange={(e) => {
-    const selected = e.target.value;
-    setProvince(selected);
-    updateMarkers(selected, office); 
-  }}
-  value={province}
->
-
-    <option value="all">แสดงทั้งหมด</option>
-    {filteredProvinces.map(p => (
-      <option key={p} value={p}>{p}</option>
-    ))}
-  </select>
-</div>
+        <label htmlFor="officeSelect">เลือกสำนักชลประทาน: </label>
+        <button onClick={() => setShowOfficeModal(true)}>
+          {office === 'all' ? 'แสดงทั้งหมด' : office}
+        </button>
+        {showOfficeModal && (
+          <div className="modal-overlay" onClick={() => setShowOfficeModal(false)}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <h3>เลือกสำนักชลประทาน</h3>
+              <ul className="modal-list">
+                <li>
+                  <button onClick={() => {
+                    setOffice('all');
+                    setProvince('all');
+                    updateMarkers('all', 'all');
+                    setShowOfficeModal(false);
+                  }}>แสดงทั้งหมด</button>
+                </li>
+                {offices.map(o => (
+                  <li key={o}>
+                    <button onClick={() => {
+                      setOffice(o);
+                      setProvince('all');
+                      updateMarkers('all', o);
+                      setShowOfficeModal(false);
+                    }}>{o}</button>
+                  </li>
+                ))}
+              </ul>
+              <button className="modal-close" onClick={() => setShowOfficeModal(false)}>ปิด</button>
+            </div>
+          </div>
+        )}
+        <br />
+        <label htmlFor="provinceSelect">เลือกโครงการ: </label>
+        <button onClick={() => setShowProvinceModal(true)}>
+          {province === 'all' ? 'แสดงทั้งหมด' : province}
+        </button>
+        {showProvinceModal && (
+          <div className="modal-overlay" onClick={() => setShowProvinceModal(false)}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <h3>เลือกโครงการ</h3>
+              <ul className="modal-list">
+                <li>
+                  <button onClick={() => {
+                    setProvince('all');
+                    updateMarkers('all', office);
+                    setShowProvinceModal(false);
+                  }}>แสดงทั้งหมด</button>
+                </li>
+                {filteredProvinces.map(p => (
+                  <li key={p}>
+                    <button onClick={() => {
+                      setProvince(p);
+                      updateMarkers(p, office);
+                      setShowProvinceModal(false);
+                    }}>{p}</button>
+                  </li>
+                ))}
+              </ul>
+              <button className="modal-close" onClick={() => setShowProvinceModal(false)}>ปิด</button>
+            </div>
+          </div>
+        )}
+      </div>
       <div id="map"></div>
     </>
   );

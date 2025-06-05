@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: Arial, sans-serif;
+  font-family: 'Kanit', Arial, sans-serif;
 }
 #root {
   display: flex;
@@ -19,6 +20,28 @@ header {
   padding: 0.5rem;
   background-color: #f4f4f4;
   text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+#controls label {
+  margin: 0 0.2rem 0 0.2rem;
+}
+#controls button {
+  margin: 0 0.2rem 0 0.2rem;
+  font-family: 'Kanit', Arial, sans-serif;
+  font-size: 1rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 5px;
+  border: 1px solid #bbb;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#controls button:hover {
+  background: #e0e0e0;
 }
 #map {
   flex: 1 1 auto;
@@ -30,4 +53,56 @@ select {
 }
 .leaflet-popup-content {
   font-size: 0.9rem;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: #fff;
+  padding: 2rem 1.5rem;
+  border-radius: 10px;
+  min-width: 250px;
+  max-width: 90vw;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  position: relative;
+}
+.modal-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.modal-list li {
+  margin-bottom: 0.5rem;
+}
+.modal-list button {
+  width: 100%;
+  background: #f0f0f0;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+.modal-list button:hover {
+  background: #e0e0e0;
+}
+.modal-close {
+  background: #ff0000;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
 }
