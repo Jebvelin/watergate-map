@@ -68,9 +68,14 @@ select {
   padding: 2rem 1.5rem;
   border-radius: 10px;
   min-width: 250px;
-  max-width: 90vw;
+  max-width: 95vw;
+  width: 360px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.2);
   position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 .modal-list {
   list-style: none;
@@ -78,12 +83,16 @@ select {
   margin: 1rem 0;
   max-height: 300px;
   overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 }
 .modal-list li {
   margin-bottom: 0.5rem;
+  width: 100%;
 }
 .modal-list button {
-  width: 100%;
+  width: 98%;
+  margin: 0 auto;
   background: #f0f0f0;
   border: none;
   padding: 0.5rem 1rem;
@@ -91,18 +100,26 @@ select {
   cursor: pointer;
   text-align: left;
   transition: background 0.2s;
-}
-.modal-list button:hover {
-  background: #e0e0e0;
+  font-size: 1rem;
+  box-sizing: border-box;
+  display: block;
 }
 .modal-close {
-  background: #ff0000;
-  color: #fff;
+  background: #ff2222 !important;
+  color: #fff !important;
   border: none;
-  padding: 0.4rem 1.2rem;
+  padding: 0.1rem 0.7rem;
   border-radius: 5px;
   cursor: pointer;
   position: absolute;
   right: 1rem;
   bottom: 1rem;
+  font-weight: bold;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s;
+  line-height: 1.2;
+}
+.modal-close:hover {
+  background: #c40000 !important;
 }
