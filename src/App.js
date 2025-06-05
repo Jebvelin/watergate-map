@@ -3,7 +3,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './styles.css';
 import gates from './gates.json';
-import provincesGeo from './provinces.geojson';
 
 
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -21,6 +20,7 @@ L.Icon.Default.mergeOptions({
 
 
 
+
 function App() {
   const mapRef = useRef(null);
   const [province, setProvince] = useState('all');
@@ -29,25 +29,61 @@ function App() {
   const [showOfficeModal, setShowOfficeModal] = useState(false);
   const [showProvinceModal, setShowProvinceModal] = useState(false);
 
-  useEffect(() => {
-    const map = L.map('map').setView([14.0, 100.6], 6);
-    mapRef.current = map;
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    updateMarkers('all');
-    return () => map.remove();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  const filteredProvinces = Array.from(
-  new Set(
-    gates
-      .filter(g => office === 'all' || g.office === office)
-      .map(g => g.province)
-  )
-).sort();
+useEffect(() => {
+  const map = L.map('map').setView([14.0, 100.6], 6);
+  mapRef.current = map;
 
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // ✅ โหลด GeoJSON สำหรับขอบเขตจังหวัด
+  fetch('/geojson/provinces.geojson')
+    .then(res => res.json())
+    .then(data => {
+      L.geoJSON(data, {
+        style: feature => ({
+          color: '#444',
+          weight: 1.5,
+          fillOpacity: 0.3,
+          fillColor: getColorByOffice(feature.properties.PROV_NAM_T)
+        }),
+        onEachFeature: (feature, layer) => {
+          layer.bindTooltip(feature.properties.PROV_NAM_T);
+        }
+      }).addTo(mapRef.current);
+    });
+
+  updateMarkers('all');
+  return () => map.remove();
+}, []);
+
+  const provinceToOffice = {
+  'กรุงเทพมหานคร': 'คป.พระพิมล',
+  'นนทบุรี': 'คป.พระพิมล',
+  'ปทุมธานี': 'คป.รังสิต',
+  'สมุทรสาคร': 'คป.สมุทรสาคร',
+  'นครปฐม': 'คป.เจ้าพระยา',
+  // เพิ่มจังหวัดอื่น ๆ ตามจริง
+};
+
+
+
+const getColorByOffice = (provName) => {
+  const office = provinceToOffice[provName];
+  const colors = {
+    'คป.พระพิมล': '#f28e2b',
+    'คป.รังสิต': '#76b7b2',
+    'คป.สมุทรสาคร': '#ffcc00',
+    'คป.เจ้าพระยา': '#4e79a7'
+  };
+  return colors[office] || '#cccccc'; // ถ้าไม่พบ office ให้ใช้สีเทา
+};
+
+
+
+  
   const updateMarkers = (selectedProvince = province, selectedOffice = office) => {
   markers.forEach(marker => mapRef.current.removeLayer(marker));
 
