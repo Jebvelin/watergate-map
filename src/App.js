@@ -86,6 +86,20 @@ function App() {
         <button onClick={() => setShowOfficeModal(true)}>
           {office === 'all' ? 'แสดงทั้งหมด' : office}
         </button>
+        <label htmlFor="provinceSelect">เลือกโครงการ: </label>
+        <button onClick={() => setShowProvinceModal(true)}>
+          {province === 'all' ? 'แสดงทั้งหมด' : province}
+        </button>
+        <button
+          style={{ marginLeft: '1rem', background: '#eee', border: '1px solid #bbb', borderRadius: '5px', padding: '0.5rem 1.2rem', fontFamily: 'Kanit, Arial, sans-serif', fontSize: '1rem', cursor: 'pointer' }}
+          onClick={() => {
+            setOffice('all');
+            setProvince('all');
+            updateMarkers('all', 'all');
+          }}
+        >
+          รีเซ็ต
+        </button>
         {showOfficeModal && (
           <div className="modal-overlay" onClick={() => setShowOfficeModal(false)}>
             <div className="modal" onClick={e => e.stopPropagation()}>
@@ -115,10 +129,6 @@ function App() {
           </div>
         )}
         <br />
-        <label htmlFor="provinceSelect">เลือกโครงการ: </label>
-        <button onClick={() => setShowProvinceModal(true)}>
-          {province === 'all' ? 'แสดงทั้งหมด' : province}
-        </button>
         {showProvinceModal && (
           <div className="modal-overlay" onClick={() => setShowProvinceModal(false)}>
             <div className="modal" onClick={e => e.stopPropagation()}>
