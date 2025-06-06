@@ -31,21 +31,26 @@ function App() {
     'สระบุรี': 'คบ.รังสิตเหนือ',
     'พระนครศรีอยุธยา': 'คบ.รังสิตเหนือ',
     'ปทุมธานี': 'คบ.รังสิตเหนือ',
+    'ปทุมธานี': 'คบ.รังสิตใต้',
+    'ปทุมธานี': 'คบ.รังสิตใต้',
     
   };
 
   const getColorByOffice = (provName) => {
     const officeName = provinceToOffice[provName];
     const colors = {
-      'คป.พระพิมล': '#f28e2b',
-      'คป.รังสิต': '#76b7b2',
+      'นนทบุรี': '#f28e2b',
+      'คป.รังสิตใต้': '#76b7b2',
       'คป.สมุทรสาคร': '#ffcc00',
-      'คป.เจ้าพระยา': '#4e79a7'
+      'คป.เจ้าพระยา': '#4e79a7',
+      'คบ.รังสิตเหนือ': '#4e79a7',
+      'คบ.รังสิตเหนือ': '#4e79a7',
     };
     return colors[officeName] || '#cccccc';
   };
 
   const updateMarkers = (selectedProject = project, selectedOffice = office) => {
+    if (!mapRef.current) return;
     markers.forEach(marker => mapRef.current.removeLayer(marker));
 
     const newMarkers = gates
