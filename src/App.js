@@ -32,9 +32,7 @@ function App() {
     'สระบุรี': 'คบ.รังสิตเหนือ',
     'พระนครศรีอยุธยา': 'คบ.รังสิตเหนือ',
     'ปทุมธานี': 'คบ.รังสิตเหนือ',
-    'ปทุมธานี': 'คบ.รังสิตใต้',
-    'ปทุมธานี': 'คบ.รังสิตใต้',
-    
+    'ปทุมธานี': 'คบ.รังสิตเหนือ'
   };
   
   const getColorByOffice = (provName) => {
@@ -44,7 +42,7 @@ function App() {
         const mainProject = province.projects?.[0];
         return mainProject?.color || '#cccccc';
       }
-    }
+    }  
   }
   return '#cccccc';
 };
