@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './styles.css';
-import gates from './gates.json'; 
+import gates from './gates.json';
 
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -18,21 +18,34 @@ L.Icon.Default.mergeOptions({
 
 function App() {
   const mapRef = useRef(null);
-  const [project, setProject] = useState('all'); // 👈 เปลี่ยนจาก province
+  const [project, setProject] = useState('all');
   const [office, setOffice] = useState('all');
   const [markers, setMarkers] = useState([]);
   const [showOfficeModal, setShowOfficeModal] = useState(false);
-  const [showProjectModal, setShowProjectModal] = useState(false); // 👈 เปลี่ยนชื่อ modal
+  const [showProjectModal, setShowProjectModal] = useState(false);
 
-  // Sample mapping ถ้าคุณต้องการแสดงสีตามสำนักงาน
-  const projectToProvince = {
-    'คป.ปทุมธานี': 'ปทุมธานี',
-    'คป.นนทบุรี': 'นนทบุรี',
-    'คป.กรุงเทพ': 'กรุงเทพมหานคร',
-    // เพิ่มตามจริง
+  const provinceToOffice = {
+    'นนทบุรี' : 'คป.พระพิมล',
+    'ปทุมธานี': 'คป.ปทุมธานี',
+    'สมุทรสาคร': 'คป.สมุทรสาคร',
+    'สระบุรี': 'คบ.รังสิตเหนือ',
+    'พระนครศรีอยุธยา': 'คบ.รังสิตเหนือ',
+    'ปทุมธานี': 'คบ.รังสิตเหนือ',
+    
   };
 
-  function updateMarkers(selectedProject = project, selectedOffice = office) {
+  const getColorByOffice = (provName) => {
+    const officeName = provinceToOffice[provName];
+    const colors = {
+      'คป.พระพิมล': '#f28e2b',
+      'คป.รังสิต': '#76b7b2',
+      'คป.สมุทรสาคร': '#ffcc00',
+      'คป.เจ้าพระยา': '#4e79a7'
+    };
+    return colors[officeName] || '#cccccc';
+  };
+
+  const updateMarkers = (selectedProject = project, selectedOffice = office) => {
     markers.forEach(marker => mapRef.current.removeLayer(marker));
 
     const newMarkers = gates
@@ -56,7 +69,7 @@ function App() {
       }).filter(Boolean);
 
     setMarkers(newMarkers);
-  }
+  };
 
   const offices = Array.from(new Set(gates.map(g => g.office))).sort();
   const filteredProjects = Array.from(
@@ -77,12 +90,11 @@ function App() {
         L.geoJSON(data, {
           style: feature => {
             const provName = feature.properties.pro_th;
-            // คุณสามารถเพิ่ม getColorByOffice(provName, office) ได้ตรงนี้
             return {
               color: '#000',
               weight: 1.5,
               fillOpacity: 0.3,
-              fillColor: '#cccccc'
+              fillColor: getColorByOffice(provName)
             };
           },
           onEachFeature: (feature, layer) => {
