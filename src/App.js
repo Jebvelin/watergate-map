@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './styles.css';
 import gates from './gates.json';
+import officeProjects from './offices_projects.json';
 
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -35,19 +36,18 @@ function App() {
     'ปทุมธานี': 'คบ.รังสิตใต้',
     
   };
-
+  
   const getColorByOffice = (provName) => {
-    const officeName = provinceToOffice[provName];
-    const colors = {
-      'นนทบุรี': '#f28e2b',
-      'คป.รังสิตใต้': '#76b7b2',
-      'คป.สมุทรสาคร': '#ffcc00',
-      'คป.เจ้าพระยา': '#4e79a7',
-      'คบ.รังสิตเหนือ': '#4e79a7',
-      'คบ.รังสิตเหนือ': '#4e79a7',
-    };
-    return colors[officeName] || '#cccccc';
-  };
+  for (const office of officeProjects) {
+    for (const province of office.provinces) {
+      if (province.name === provName) {
+        const mainProject = province.projects?.[0];
+        return mainProject?.color || '#cccccc';
+      }
+    }
+  }
+  return '#cccccc';
+};
 
   const updateMarkers = (selectedProject = project, selectedOffice = office) => {
     if (!mapRef.current) return;
