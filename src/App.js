@@ -15,76 +15,30 @@ L.Icon.Default.mergeOptions({
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
 });
- 
+
 function App() {
   const mapRef = useRef(null);
-  const [province, setProvince] = useState('all');
+  const [project, setProject] = useState('all'); // 👈 เปลี่ยนจาก province
   const [office, setOffice] = useState('all');
   const [markers, setMarkers] = useState([]);
   const [showOfficeModal, setShowOfficeModal] = useState(false);
-  const [showProvinceModal, setShowProvinceModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false); // 👈 เปลี่ยนชื่อ modal
 
-  const provinceToOffice = {
-    'กรุงเทพมหานคร': 'คป.พระพิมล',
-    'นนทบุรี': 'คป.พระพิมล',
-    'ปทุมธานี': 'คป.รังสิต',
-    'สมุทรสาคร': 'คป.สมุทรสาคร',
-    'นครปฐม': 'คป.เจ้าพระยา',
+  // Sample mapping ถ้าคุณต้องการแสดงสีตามสำนักงาน
+  const projectToProvince = {
+    'คป.ปทุมธานี': 'ปทุมธานี',
+    'คป.นนทบุรี': 'นนทบุรี',
+    'คป.กรุงเทพ': 'กรุงเทพมหานคร',
+    // เพิ่มตามจริง
   };
 
-  const getColorByOffice = (provName) => {
-    const office = provinceToOffice[provName];
-    const colors = {
-      'คป.พระพิมล': '#f28e2b',
-      'คป.รังสิต': '#76b7b2',
-      'คป.สมุทรสาคร': '#ffcc00',
-      'คป.เจ้าพระยา': '#4e79a7'
-    };
-    return colors[office] || '#cccccc';
-  };
-
-  useEffect(() => {
-    const map = L.map('map').setView([14.0, 100.6], 6);
-    mapRef.current = map;
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    fetch('/geojson/provinces.geojson')
-      .then(res => res.json())
-      .then(data => {
-          L.geoJSON(data, {
-          style: feature => {
-            const provName = feature.properties.pro_th;
-            const color = getColorByOffice(provName);
-            console.log(`จังหวัด: ${provName}, สี: ${color}`);  // ✅ ใส่ตรงนี้
-
-            return {
-              color: '#000',           // สีขอบดำให้ชัดเจน
-              weight: 1.5,
-              fillOpacity: 0.4,
-              fillColor: color
-            };
-          },
-          onEachFeature: (feature, layer) => {
-            layer.bindTooltip(feature.properties.pro_th);
-          }
-        }).addTo(mapRef.current);
-
-      });
-
-    updateMarkers('all');
-    return () => map.remove();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function updateMarkers(selectedProvince = province, selectedOffice = office) {
+  function updateMarkers(selectedProject = project, selectedOffice = office) {
     markers.forEach(marker => mapRef.current.removeLayer(marker));
 
     const newMarkers = gates
-      .filter(g => (selectedOffice === 'all' || g.office === selectedOffice) &&
-        (selectedProvince === 'all' || g.province === selectedProvince)
+      .filter(g =>
+        (selectedOffice === 'all' || g.office === selectedOffice) &&
+        (selectedProject === 'all' || g.project === selectedProject)
       )
       .map(g => {
         if (!g.lat || !g.lon) return null;
@@ -92,7 +46,7 @@ function App() {
           .addTo(mapRef.current)
           .bindPopup(`
             <b>${g.name}</b><br>
-            โครงการ: ${g.province}<br>
+            โครงการ: ${g.project}<br>
             แม่น้ำ: ${g.river}<br>
             <a href="https://www.google.com/maps?q=${g.lat},${g.lon}" target="_blank">
               🗘️ ดูใน Google Maps
@@ -106,10 +60,40 @@ function App() {
 
   const offices = Array.from(new Set(gates.map(g => g.office))).sort();
   const filteredProjects = Array.from(
-    new Set(
-      gates.filter(g => office === 'all' || g.office === office).map(g => g.province)
-    )
+    new Set(gates.filter(g => office === 'all' || g.office === office).map(g => g.project))
   ).sort();
+
+  useEffect(() => {
+    const map = L.map('map').setView([14.0, 100.6], 6);
+    mapRef.current = map;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    fetch('/geojson/provinces.geojson')
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          style: feature => {
+            const provName = feature.properties.pro_th;
+            // คุณสามารถเพิ่ม getColorByOffice(provName, office) ได้ตรงนี้
+            return {
+              color: '#000',
+              weight: 1.5,
+              fillOpacity: 0.3,
+              fillColor: '#cccccc'
+            };
+          },
+          onEachFeature: (feature, layer) => {
+            layer.bindTooltip(feature.properties.pro_th);
+          }
+        }).addTo(mapRef.current);
+      });
+
+    updateMarkers('all');
+    return () => map.remove();
+  }, []);
 
   return (
     <>
@@ -117,24 +101,25 @@ function App() {
         <h2>ระบบแสดงตำแหน่งประตูระบายน้ำในประเทศไทย</h2>
       </header>
       <div id="controls">
-        <label htmlFor="officeSelect">เลือกสำนักชลประทาน: </label>
+        <label>เลือกสำนักชลประทาน: </label>
         <button onClick={() => setShowOfficeModal(true)}>
           {office === 'all' ? 'แสดงทั้งหมด' : office}
         </button>
-        <label htmlFor="provinceSelect">เลือกโครงการ: </label>
-        <button onClick={() => setShowProvinceModal(true)}>
-          {province === 'all' ? 'แสดงทั้งหมด' : province}
+        <label>เลือกโครงการ: </label>
+        <button onClick={() => setShowProjectModal(true)}>
+          {project === 'all' ? 'แสดงทั้งหมด' : project}
         </button>
         <button
-          style={{ marginLeft: '1rem', background: '#eee', border: '1px solid #bbb', borderRadius: '5px', padding: '0.5rem 1.2rem', fontFamily: 'Kanit, Arial, sans-serif', fontSize: '1rem', cursor: 'pointer' }}
+          style={{ marginLeft: '1rem' }}
           onClick={() => {
             setOffice('all');
-            setProvince('all');
+            setProject('all');
             updateMarkers('all', 'all');
           }}
         >
           รีเซ็ต
         </button>
+
         {showOfficeModal && (
           <div className="modal-overlay" onClick={() => setShowOfficeModal(false)}>
             <div className="modal" onClick={e => e.stopPropagation()}>
@@ -143,7 +128,7 @@ function App() {
                 <li>
                   <button onClick={() => {
                     setOffice('all');
-                    setProvince('all');
+                    setProject('all');
                     updateMarkers('all', 'all');
                     setShowOfficeModal(false);
                   }}>แสดงทั้งหมด</button>
@@ -152,7 +137,7 @@ function App() {
                   <li key={o}>
                     <button onClick={() => {
                       setOffice(o);
-                      setProvince('all');
+                      setProject('all');
                       updateMarkers('all', o);
                       setShowOfficeModal(false);
                     }}>{o}</button>
@@ -163,29 +148,30 @@ function App() {
             </div>
           </div>
         )}
-        {showProvinceModal && (
-          <div className="modal-overlay" onClick={() => setShowProvinceModal(false)}>
+
+        {showProjectModal && (
+          <div className="modal-overlay" onClick={() => setShowProjectModal(false)}>
             <div className="modal" onClick={e => e.stopPropagation()}>
               <h3>เลือกโครงการ</h3>
               <ul className="modal-list">
                 <li>
                   <button onClick={() => {
-                    setProvince('all');
+                    setProject('all');
                     updateMarkers('all', office);
-                    setShowProvinceModal(false);
+                    setShowProjectModal(false);
                   }}>แสดงทั้งหมด</button>
                 </li>
                 {filteredProjects.map(p => (
                   <li key={p}>
                     <button onClick={() => {
-                      setProvince(p);
+                      setProject(p);
                       updateMarkers(p, office);
-                      setShowProvinceModal(false);
+                      setShowProjectModal(false);
                     }}>{p}</button>
                   </li>
                 ))}
               </ul>
-              <button className="modal-close" onClick={() => setShowProvinceModal(false)}>ปิด</button>
+              <button className="modal-close" onClick={() => setShowProjectModal(false)}>ปิด</button>
             </div>
           </div>
         )}
