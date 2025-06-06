@@ -17,10 +17,10 @@ L.Icon.Default.mergeOptions({
 
 const provinceToOffice = {
   'สำนักชลประทานที่ 11': 'คป.พระพิมล',
-  'นนทบุรี': 'คป.พระพิมล',
   'ปทุมธานี': 'คป.รังสิต',
   'สมุทรสาคร': 'คป.สมุทรสาคร',
   'นครปฐม': 'คป.เจ้าพระยา',
+
 };
 
 const getColorByOffice = (provName) => {
